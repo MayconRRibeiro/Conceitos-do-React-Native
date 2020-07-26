@@ -21,7 +21,15 @@ export default function App() {
   }, []);
 
   async function handleLikeRepository(id) {
-    // Implement "Like Repository" functionality
+    await api.post(`repositories/${id}/like`);
+
+    const newRepositories = repositories.map(repository =>
+      repository.id !== id
+        ? repository
+        : { ...repository, likes: repository.likes + 1 }
+    );
+
+    setRepositories(newRepositories);
   }
 
   return (
@@ -30,13 +38,13 @@ export default function App() {
       <SafeAreaView style={styles.container}>
         <FlatList
           data={repositories}
-          keyExtractor={(repository) => repository.id}
+          keyExtractor={repository => repository.id}
           renderItem={({ item: repository }) => (
             <View style={styles.repositoryContainer}>
               <Text style={styles.repository}>{repository.title}</Text>
 
               <View style={styles.techsContainer}>
-                {repository.techs.map((tech) => (
+                {repository.techs.map(tech => (
                   <Text key={tech} style={styles.tech}>
                     {tech}
                   </Text>
@@ -48,7 +56,7 @@ export default function App() {
                   style={styles.likeText}
                   testID={`repository-likes-${repository.id}`}
                 >
-                  {repository.likes} curtidas
+                  {repository.likes} curtida{repository.likes === 1 ? '' : 's'}
                 </Text>
               </View>
 
@@ -61,7 +69,7 @@ export default function App() {
               </TouchableOpacity>
             </View>
           )}
-        ></FlatList>
+        />
       </SafeAreaView>
     </>
   );
